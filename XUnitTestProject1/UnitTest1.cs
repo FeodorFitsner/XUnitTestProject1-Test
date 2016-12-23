@@ -14,6 +14,17 @@ namespace XUnitTestProject1
     public class UnitTest1
     {
         [Fact]
+        public void TestTest()
+        {
+            Console.WriteLine("Message from test");
+
+            var env = Environment.GetEnvironmentVariable("APPVEYOR_API_URL");
+
+            Console.WriteLine($"Detected val: {env}");
+
+        }
+
+        [Fact(Skip="skipped")]
         public void TestAsyncMethod()
         {
             var dll = "XUnitTestProject1.dll";
@@ -37,6 +48,7 @@ namespace XUnitTestProject1
         [Fact]
         public void TestSyncMethod()
         {
+
             var dll = "XUnitTestProject1.dll";
             var helper = new DiaSessionWrapperHelper(dll);
 
