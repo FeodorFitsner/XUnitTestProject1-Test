@@ -20,7 +20,8 @@ namespace XUnitTestProject1
 
             var env = Environment.GetEnvironmentVariable("APPVEYOR_API_URL");
 
-            Console.WriteLine($"Detected val: {env}");
+            Assert.NotNull(env);
+            Assert.NotEqual("", env);
 
         }
 
@@ -52,7 +53,7 @@ namespace XUnitTestProject1
             var dll = "XUnitTestProject1.dll";
             var helper = new DiaSessionWrapperHelper(dll);
 
-            var method = "Test1";
+            var method = "TestAsyncMethod";
             var type = "XUnitTestProject1.UnitTest1";
             var path = "";
 
