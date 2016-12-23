@@ -5,8 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.DotNet.InternalAbstractions;
+using Microsoft.Extensions.DependencyModel;
 using Xunit;
 
 namespace XUnitTestProject1
@@ -23,7 +26,18 @@ namespace XUnitTestProject1
             Assert.NotNull(env);
             Assert.NotEqual("", env);
 
+            var path = typeof(UnitTest1).GetTypeInfo().Assembly.Location;
+
+            var reporters = GetAvailableRunnerReporters(new[] { path });
+
+            Assert.NotEmpty(reporters);
+
+
+            var reporter = reporters.FirstOrDefault(r => r.IsEnvironmentallyEnabled);
+
+            Assert.NotNull(reporter);
         }
+        
 
         [Fact(Skip="skipped")]
         public void TestAsyncMethod()
@@ -83,6 +97,55 @@ namespace XUnitTestProject1
             await Task.CompletedTask;
         }
 
+
+        static List<IRunnerReporter> GetAvailableRunnerReporters(IEnumerable<string> sources)
+        {
+            // Combine all input libs and merge their contexts to find the potential reporters
+            var result = new List<IRunnerReporter>();
+            var dcjr = new DependencyContextJsonReader();
+            var deps = sources
+                        .Select(Path.GetFullPath)
+                        .Select(s => s.Replace(".dll", ".deps.json"))
+                        .Where(File.Exists)
+                        .Select(f => new MemoryStream(Encoding.UTF8.GetBytes(File.ReadAllText(f))))
+                        .Select(dcjr.Read);
+            var ctx = deps.Aggregate(DependencyContext.Default, (context, dependencyContext) => context.Merge(dependencyContext));
+            dcjr.Dispose();
+
+
+            foreach (var assemblyName in ctx.GetRuntimeAssemblyNames(RuntimeEnvironment.GetRuntimeIdentifier()))
+            {
+                try
+                {
+                    var assembly = Assembly.Load(assemblyName);
+                    foreach (var type in assembly.DefinedTypes)
+                    {
+#pragma warning disable CS0618
+                        if (type == null || type.IsAbstract || type == typeof(DefaultRunnerReporter).GetTypeInfo() || type == typeof(DefaultRunnerReporterWithTypes).GetTypeInfo() || type.ImplementedInterfaces.All(i => i != typeof(IRunnerReporter)))
+                            continue;
+#pragma warning restore CS0618
+
+                        var ctor = type.DeclaredConstructors.FirstOrDefault(c => c.GetParameters().Length == 0);
+                        if (ctor == null)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine($"Type {type.FullName} in assembly {assembly} appears to be a runner reporter, but does not have an empty constructor.");
+                            Console.ResetColor();
+                            continue;
+                        }
+
+                        result.Add((IRunnerReporter)ctor.Invoke(new object[0]));
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+
+            return result;
+        }
+
     }
 
     public class MyFactAttribute : FactAttribute
@@ -100,6 +163,8 @@ namespace XUnitTestProject1
             }
         }
     }
+
+
 
     class DiaSessionWrapperHelper 
     {
