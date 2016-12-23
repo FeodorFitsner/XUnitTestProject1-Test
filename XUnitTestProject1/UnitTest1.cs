@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using Microsoft.DotNet.InternalAbstractions;
 using Microsoft.Extensions.DependencyModel;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
+using TestMethodDisplay = Xunit.Sdk.TestMethodDisplay;
 
 namespace XUnitTestProject1
 {
@@ -37,6 +40,14 @@ namespace XUnitTestProject1
 
 
             Assert.Equal("appveyor", reporter.RunnerSwitch);
+
+            //var sink = reporter.CreateMessageHandler(new RunLogger());
+
+            //sink.OnMessage(new TestAssemblyStarting(Enumerable.Empty<ITestCase>(), new TestAssembly(new ReflectionAssemblyInfo(typeof(UnitTest1).GetTypeInfo().Assembly)),
+            //    DateTime.UtcNow, "env", "name"));
+
+
+            //sink.OnMessage(new Xunit.TestStarting(new XunitTest(new XunitTestCase(null, TestMethodDisplay.ClassAndMethod, new TestMethod(new TestClass(new TestCollection()))))))
         }
         
 
@@ -303,5 +314,30 @@ namespace XUnitTestProject1
     {
         public string FileName { get; set; }
         public int LineNumber { get; set; }
+    }
+
+    class RunLogger : IRunnerLogger
+    {
+        public RunLogger()
+        {
+            LockObject = new object();
+        }
+        public void LogMessage(StackFrameInfo stackFrame, string message)
+        {
+        }
+
+        public void LogImportantMessage(StackFrameInfo stackFrame, string message)
+        {
+        }
+
+        public void LogWarning(StackFrameInfo stackFrame, string message)
+        {
+        }
+
+        public void LogError(StackFrameInfo stackFrame, string message)
+        {
+        }
+
+        public object LockObject { get; }
     }
 }
