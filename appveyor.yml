@@ -6,3 +6,4 @@ build_script:
   - cmd: dotnet restore XUnitTestProject1\XUnitTestProject1.csproj 
   - cmd: dotnet test XUnitTestProject1\XUnitTestProject1.csproj 
   
+test: off

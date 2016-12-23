@@ -19,8 +19,6 @@ namespace XUnitTestProject1
         [Fact]
         public void TestTest()
         {
-            Console.WriteLine("Message from test");
-
             var env = Environment.GetEnvironmentVariable("APPVEYOR_API_URL");
 
             Assert.NotNull(env);
