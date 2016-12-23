@@ -34,6 +34,9 @@ namespace XUnitTestProject1
             var reporter = reporters.FirstOrDefault(r => r.IsEnvironmentallyEnabled);
 
             Assert.NotNull(reporter);
+
+
+            Assert.Equal("appveyor", reporter.RunnerSwitch);
         }
         
 
