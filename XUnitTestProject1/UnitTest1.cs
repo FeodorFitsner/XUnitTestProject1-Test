@@ -94,8 +94,6 @@ namespace XUnitTestProject1
             var data = session.GetNavigationData(type, method, path);
 
             Assert.NotNull(data?.FileName);
-
-            Thread.Sleep(10000);
         }
 
 
@@ -109,6 +107,8 @@ namespace XUnitTestProject1
         public async void Test311()
         {
             await Task.CompletedTask;
+
+            await Task.Delay(10000);
         }
 
 
