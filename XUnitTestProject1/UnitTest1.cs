@@ -96,8 +96,6 @@ namespace XUnitTestProject1
             Assert.NotNull(data?.FileName);
         }
 
-
-        [Fact(Skip = "skipped")]
         public async Task Test2()
         {
             await Task.CompletedTask;
