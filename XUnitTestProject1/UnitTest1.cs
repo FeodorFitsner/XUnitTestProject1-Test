@@ -96,6 +96,7 @@ namespace XUnitTestProject1
             Assert.NotNull(data?.FileName);
         }
 
+        [Fact]
         public async Task Test2()
         {
             await Task.CompletedTask;
@@ -124,14 +125,25 @@ namespace XUnitTestProject1
             var ctx = deps.Aggregate(DependencyContext.Default, (context, dependencyContext) => context.Merge(dependencyContext));
             dcjr.Dispose();
 
+            var depsAssms = ctx.GetRuntimeAssemblyNames(RuntimeEnvironment.GetRuntimeIdentifier())
+                               .ToList();
 
-            foreach (var assemblyName in ctx.GetRuntimeAssemblyNames(RuntimeEnvironment.GetRuntimeIdentifier()))
+            // Make sure to also check assemblies within the directory of the sources
+            var dllsInSources = sources
+                        .Select(Path.GetFullPath)
+                        .Select(Path.GetDirectoryName)
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .SelectMany(p => Directory.GetFiles(p, "*.dll").Select(f => Path.Combine(p, f)))
+                        .Select(f => new AssemblyName { Name = Path.GetFileNameWithoutExtension(f) })
+                        .ToList();
+
+            foreach (var assemblyName in depsAssms.Concat(dllsInSources))
             {
                 try
                 {
                     var assembly = Assembly.Load(assemblyName);
-//                    foreach (var type in assembly.DefinedTypes)
-//                    {
+                    foreach (var type in assembly.DefinedTypes)
+                    {
 //#pragma warning disable CS0618
 //                        if (type == null || type.IsAbstract || type == typeof(DefaultRunnerReporter).GetTypeInfo() || type == typeof(DefaultRunnerReporterWithTypes).GetTypeInfo() || type.ImplementedInterfaces.All(i => i != typeof(IRunnerReporter)))
 //                            continue;
@@ -146,9 +158,9 @@ namespace XUnitTestProject1
 //                            continue;
 //                        }
 
-//                        result.Add((IRunnerReporter)ctor.Invoke(new object[0]));
-//                    }
-                    if(assembly.FullName.Contains("reporters"))
+                        //result.Add((IRunnerReporter)ctor.Invoke(new object[0]));
+                    }
+                    if (assembly.FullName.Contains("reporters"))
                     {
                         result.Add(assembly);
                     }
