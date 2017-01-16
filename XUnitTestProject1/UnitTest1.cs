@@ -8,8 +8,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+#if NETCOREAPP1_0
 using Microsoft.DotNet.InternalAbstractions;
 using Microsoft.Extensions.DependencyModel;
+#endif
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -29,10 +31,11 @@ namespace XUnitTestProject1
 
             var path = typeof(UnitTest1).GetTypeInfo().Assembly.Location;
 
+#if NETCOREAPP1_0
             var reporters = GetAvailableRunnerReporters(new[] { path });
 
             Assert.NotEmpty(reporters);
-
+#endif
 
            // var reporter = reporters.FirstOrDefault(r => r.IsEnvironmentallyEnabled);
 
@@ -110,7 +113,7 @@ namespace XUnitTestProject1
            // await Task.Delay(10000);
         }
 
-
+#if NETCOREAPP1_0
         static List<object> GetAvailableRunnerReporters(IEnumerable<string> sources)
         {
             // Combine all input libs and merge their contexts to find the potential reporters
@@ -173,6 +176,7 @@ namespace XUnitTestProject1
 
             return result;
         }
+#endif
 
     }
 
