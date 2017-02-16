@@ -8,10 +8,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-//#if NETCOREAPP1_0
-//using Microsoft.DotNet.PlatformAbstractions;
-//using Microsoft.Extensions.DependencyModel;
-//#endif
+#if NETCOREAPP1_0
+using Microsoft.DotNet.PlatformAbstractions;
+using Microsoft.Extensions.DependencyModel;
+#endif
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -31,13 +31,13 @@ namespace XUnitTestProject1
 
             var path = typeof(UnitTest1).GetTypeInfo().Assembly.Location;
 
-//#if NETCOREAPP1_0
-//            var reporters = GetAvailableRunnerReporters(new[] { path });
+#if NETCOREAPP1_0
+            var reporters = GetAvailableRunnerReporters(new[] { path });
 
-//            Assert.NotEmpty(reporters);
-//#endif
+            Assert.NotEmpty(reporters);
+#endif
 
-           // var reporter = reporters.FirstOrDefault(r => r.IsEnvironmentallyEnabled);
+            // var reporter = reporters.FirstOrDefault(r => r.IsEnvironmentallyEnabled);
 
             //Assert.NotNull(reporter);
 
@@ -52,7 +52,7 @@ namespace XUnitTestProject1
 
             //sink.OnMessage(new Xunit.TestStarting(new XunitTest(new XunitTestCase(null, TestMethodDisplay.ClassAndMethod, new TestMethod(new TestClass(new TestCollection()))))))
         }
-        
+
 
         [Fact(Skip="skipped")]
         public void TestAsyncMethod()
@@ -113,70 +113,70 @@ namespace XUnitTestProject1
            // await Task.Delay(10000);
         }
 
-//#if NETCOREAPP1_0
-//        static List<object> GetAvailableRunnerReporters(IEnumerable<string> sources)
-//        {
-//            // Combine all input libs and merge their contexts to find the potential reporters
-//            var result = new List<object>();
-//            var dcjr = new DependencyContextJsonReader();
-//            var deps = sources
-//                        .Select(Path.GetFullPath)
-//                        .Select(s => s.Replace(".dll", ".deps.json"))
-//                        .Where(File.Exists)
-//                        .Select(f => new MemoryStream(Encoding.UTF8.GetBytes(File.ReadAllText(f))))
-//                        .Select(dcjr.Read);
-//            var ctx = deps.Aggregate(DependencyContext.Default, (context, dependencyContext) => context.Merge(dependencyContext));
-//            dcjr.Dispose();
+#if NETCOREAPP1_0
+        static List<object> GetAvailableRunnerReporters(IEnumerable<string> sources)
+        {
+            // Combine all input libs and merge their contexts to find the potential reporters
+            var result = new List<object>();
+            var dcjr = new DependencyContextJsonReader();
+            var deps = sources
+                        .Select(Path.GetFullPath)
+                        .Select(s => s.Replace(".dll", ".deps.json"))
+                        .Where(File.Exists)
+                        .Select(f => new MemoryStream(Encoding.UTF8.GetBytes(File.ReadAllText(f))))
+                        .Select(dcjr.Read);
+            var ctx = deps.Aggregate(DependencyContext.Default, (context, dependencyContext) => context.Merge(dependencyContext));
+            dcjr.Dispose();
 
-//            var depsAssms = ctx.GetRuntimeAssemblyNames(RuntimeEnvironment.GetRuntimeIdentifier())
-//                               .ToList();
+            var depsAssms = ctx.GetRuntimeAssemblyNames(RuntimeEnvironment.GetRuntimeIdentifier())
+                               .ToList();
 
-//            // Make sure to also check assemblies within the directory of the sources
-//            var dllsInSources = sources
-//                        .Select(Path.GetFullPath)
-//                        .Select(Path.GetDirectoryName)
-//                        .Distinct(StringComparer.OrdinalIgnoreCase)
-//                        .SelectMany(p => Directory.GetFiles(p, "*.dll").Select(f => Path.Combine(p, f)))
-//                        .Select(f => new AssemblyName { Name = Path.GetFileNameWithoutExtension(f) })
-//                        .ToList();
+            // Make sure to also check assemblies within the directory of the sources
+            var dllsInSources = sources
+                        .Select(Path.GetFullPath)
+                        .Select(Path.GetDirectoryName)
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .SelectMany(p => Directory.GetFiles(p, "*.dll").Select(f => Path.Combine(p, f)))
+                        .Select(f => new AssemblyName { Name = Path.GetFileNameWithoutExtension(f) })
+                        .ToList();
 
-//            foreach (var assemblyName in depsAssms.Concat(dllsInSources))
-//            {
-//                try
-//                {
-//                    var assembly = Assembly.Load(assemblyName);
-//                    foreach (var type in assembly.DefinedTypes)
-//                    {
-////#pragma warning disable CS0618
-////                        if (type == null || type.IsAbstract || type == typeof(DefaultRunnerReporter).GetTypeInfo() || type == typeof(DefaultRunnerReporterWithTypes).GetTypeInfo() || type.ImplementedInterfaces.All(i => i != typeof(IRunnerReporter)))
-////                            continue;
-////#pragma warning restore CS0618
+            foreach (var assemblyName in depsAssms.Concat(dllsInSources))
+            {
+                try
+                {
+                    var assembly = Assembly.Load(assemblyName);
+                    foreach (var type in assembly.DefinedTypes)
+                    {
+                        //#pragma warning disable CS0618
+                        //                        if (type == null || type.IsAbstract || type == typeof(DefaultRunnerReporter).GetTypeInfo() || type == typeof(DefaultRunnerReporterWithTypes).GetTypeInfo() || type.ImplementedInterfaces.All(i => i != typeof(IRunnerReporter)))
+                        //                            continue;
+                        //#pragma warning restore CS0618
 
-////                        var ctor = type.DeclaredConstructors.FirstOrDefault(c => c.GetParameters().Length == 0);
-////                        if (ctor == null)
-////                        {
-////                            Console.ForegroundColor = ConsoleColor.Yellow;
-////                            Console.WriteLine($"Type {type.FullName} in assembly {assembly} appears to be a runner reporter, but does not have an empty constructor.");
-////                            Console.ResetColor();
-////                            continue;
-////                        }
+                        //                        var ctor = type.DeclaredConstructors.FirstOrDefault(c => c.GetParameters().Length == 0);
+                        //                        if (ctor == null)
+                        //                        {
+                        //                            Console.ForegroundColor = ConsoleColor.Yellow;
+                        //                            Console.WriteLine($"Type {type.FullName} in assembly {assembly} appears to be a runner reporter, but does not have an empty constructor.");
+                        //                            Console.ResetColor();
+                        //                            continue;
+                        //                        }
 
-//                        //result.Add((IRunnerReporter)ctor.Invoke(new object[0]));
-//                    }
-//                    if (assembly.FullName.Contains("reporters"))
-//                    {
-//                        result.Add(assembly);
-//                    }
-//                }
-//                catch
-//                {
-//                    continue;
-//                }
-//            }
+                        //result.Add((IRunnerReporter)ctor.Invoke(new object[0]));
+                    }
+                    if (assembly.FullName.Contains("reporters"))
+                    {
+                        result.Add(assembly);
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+            }
 
-//            return result;
-//        }
-//#endif
+            return result;
+        }
+#endif
 
     }
 
