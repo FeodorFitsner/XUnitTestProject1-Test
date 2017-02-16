@@ -97,7 +97,7 @@ namespace XUnitTestProject1
             var data = session.GetNavigationData(type, method, path);
 
             Assert.NotNull(data?.FileName);
-            Thread.Sleep(1000);
+            Thread.Sleep(10000);
         }
 
         [Fact]
