@@ -9,9 +9,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20170210-02" />
-    <PackageReference Include="xunit" Version="2.2.0-rc3-build3528" />
+    <PackageReference Include="xunit" Version="2.2.0-rc4-build3529" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.1.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0-rc4-build1255" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0-rc4-build1257" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />

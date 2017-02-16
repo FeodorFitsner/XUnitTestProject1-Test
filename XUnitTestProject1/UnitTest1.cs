@@ -140,8 +140,8 @@ namespace XUnitTestProject1
                         .Select(f => new AssemblyName { Name = Path.GetFileNameWithoutExtension(f) })
                         .ToList();
 
-            //foreach (var assemblyName in depsAssms.Concat(dllsInSources))
-            foreach (var assemblyName in dllsInSources)
+            foreach (var assemblyName in depsAssms.Concat(dllsInSources))
+           // foreach (var assemblyName in dllsInSources)
             {
                 try
                 {
