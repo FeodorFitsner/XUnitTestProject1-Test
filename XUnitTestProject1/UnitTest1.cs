@@ -75,7 +75,7 @@ namespace XUnitTestProject1
             Assert.NotNull(data?.FileName);
         }
 
-        [Fact(Skip = "skipped")]
+        [Fact]
         public void TestSyncMethod()
         {
 
