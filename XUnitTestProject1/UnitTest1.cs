@@ -100,9 +100,9 @@ namespace XUnitTestProject1
         }
 
         [Fact]
-        public void Test2()
+        public async Task Test2()
         {
-            var isNet = GetIsExecutingOnNetFramework();
+            await Task.CompletedTask;
         }
 
         [Fact(Skip = "skipped")]
@@ -111,12 +111,6 @@ namespace XUnitTestProject1
             await Task.CompletedTask;
 
            // await Task.Delay(10000);
-        }
-
-        static bool GetIsExecutingOnNetFramework()
-        {
-            var assm = typeof(object).GetTypeInfo().Assembly.GetName().Name;
-            return string.Equals("mscorlib", assm, StringComparison.OrdinalIgnoreCase);
         }
 
 #if NETCOREAPP1_0
